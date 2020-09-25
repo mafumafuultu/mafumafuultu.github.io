@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="author" content="mafumafuultu">
+	<title>Color tool</title>
+	<style>
+* {box-sizing: border-box;}
+html,body{width: 100%;height: 100%;margin: 0;padding: 0;}
+html {background-color: #333333;font-family: 'Cascadia code', monospace;}
+header {color: whitesmoke;padding: 0 1rem;}
+h1,h2,h3,h4,h5,h6 {margin: 0;}
+p {color: whitesmoke}
+a:link {color: #99CCFF;}
+a:visited {color: #3399FF;}
+.maxbox {width: 100%;height: 100%;}
+.grid {display: grid;}
+.col7-3 {grid-template-columns: 70% 30%;padding: 2rem;}
+.col1-1 {grid-template-columns: 50% 50%;}
+.flex {display: flex;position: relative;}
+.flex > .color-item {
+	writing-mode: tb-rl;
+	flex-grow: 1;
+	box-shadow: 0 0 0 1px orange;
+    font-size: 0.8rem;
+	white-space: pre;
+	padding: .5rem 0;
+}
+.flex:nth-child(1) {border-top: 1.5rem solid royalblue;}
+.flex:nth-child(1)::before {content: "base";position: absolute;top: -1.5rem;color:white;}
+.flex:nth-child(2) {border-top: 1.5rem solid yellow;min-width: 15rem;}
+.flex:nth-child(2)::before {content: "sub";position: absolute;top: -1.5rem;}
+.delbtn {display: block;}
+#preview {
+	padding: 2rem .5rem;
+	margin: 1rem;
+	text-align: center;
+}
+#buttons {
+	margin: 1rem;
+	font-size: 1.5rem;
+}
+.colorrange {
+	padding: 0 1rem;
+}
+.colorrange > input {width:100%;position: relative;user-select: none;}
+.colorrange > input:hover::before {
+	content: attr(data-val);
+	position: absolute;
+	left:50%;
+	top: -0.5rem;
+	display: block;
+	background: whitesmoke;
+	border: 0.5px solid gray;
+	padding: .5rem;
+}
+#notyarea {
+	position: absolute;
+	top: .5rem;
+	right: .5rem;
+	display: grid;
+	grid-auto-rows: auto;
+	grid-gap: .5rem;
+	z-index: 1;
+}
+.noty {
+	min-width: 15rem;
+	background: rgba(0,142,122,1);
+	padding: .5rem;
+}
+	</style>
+<script>
+const APP_KEY = 'coloritemcreator';
+const ID = id => document.getElementById(id);
+const MAX_ITEM = {
+	'base-colors': 3,
+	'sub-colors': 5,
+	check(id) {
+		return ID(id).children.length < this[id];
+	}
+};
+const getColors = suff => ['r', 'g', 'b', 'a'].map(v => ID(`${v}-${suff}`).value);
+const getfore = () => getColors('color');
+const getback = () => getColors('bg');
+const appendEl = (p, c) => (p.append(c), p);
+const noty = txt => {
+	const node = ID('notyItem').content.cloneNode(true);
+	node.querySelector('p').textContent = txt;
+	appendEl(ID('notyarea'), node);
+	setTimeout(() => ID('notyarea').querySelector('.noty')?.remove(), 3000);
+};
+const checkAppender = (p, c) => MAX_ITEM.check(p.id) ? appendEl(p, c) : p;
+const nobubble = e => (e.stopPropagation(), Promise.resolve(e));
+const removethis = ev => nobubble(ev).then(e => e.target.parentElement.remove());
+const copystyle = ev => nobubble(ev).then(e => navigator.clipboard.writeText(e.target.getAttribute('style')).then(() => noty('copy')));
+const genColorItem = colorData => {
+	var div = document.createElement('div');
+	div.onclick = copystyle;
+	div.classList.add('color-item');
+	div.style = colorData.join(' ');
+	div.textContent = colorData.join('\r\n');
+	var btn = document.createElement('span');
+	btn.onclick = removethis;
+	btn.classList.add('delbtn')
+	btn.textContent = 'delete';
+	div.prepend(btn);
+	return div;
+};
+
+const genColorItemEl = () => genColorItem([`color: rgba(${getfore().join(',')});`, `background-color: rgba(${getback().join(',')});`]);
+
+const getChildData = id => [...ID(id).querySelectorAll('.color-item')].map(v => v.getAttribute('style'));
+const addBase = () => checkAppender(ID('base-colors'), genColorItemEl());
+const addSub = () => checkAppender(ID('sub-colors'), genColorItemEl());
+const clearAll = () => [...document.querySelectorAll('.color-item')].forEach(v => v.remove());
+const upcolor = () => {
+	var target = ID('preview');
+	var {rcolor, gcolor, bcolor, acolor, rbg, gbg, bbg, abg} = target.dataset;
+	var data = [`color: rgba(${rcolor},${gcolor},${bcolor},${acolor});`, `background-color: rgba(${rbg},${gbg},${bbg},${abg})`];
+	target.style = data.join(' ');
+	target.textContent = data.join(' ');
+};
+const updatecolor = (t, me) => (me.dataset.val = ID('preview').dataset[t] = me.value, upcolor());
+const defaultColorItem = v => genColorItem(v.replace(/; /, ';---').split('---'));
+const DEFAULT_VAL = { 'r-color': 0, 'g-color': 0, 'b-color': 0, 'a-color': 1, 'r-bg': 255, 'g-bg': 255, 'b-bg': 255, 'a-bg': 1, };
+const onload = () => {
+	[...document.getElementsByClassName('colorrange')].flatMap(v => [...v.querySelectorAll('input')]).forEach(v => {
+		v.dataset.val = v.value = DEFAULT_VAL[v.id];
+	});
+	upcolor();
+	Promise.resolve(localStorage.getItem(APP_KEY)).then(v => v == null ? Promise.reject() : JSON.parse(v))
+	.then(o => {
+		o.base.map(defaultColorItem).reduce(checkAppender, ID('base-colors'));
+		o.sub.map(defaultColorItem).reduce(checkAppender, ID('sub-colors'));
+	});
+};
+
+const beforeunload = () => {
+	console.log('base-colors',getChildData('base-colors'), 'sub-colors',getChildData('sub-colors'))
+	localStorage.setItem(APP_KEY, JSON.stringify({
+		base: getChildData('base-colors'),
+		sub: getChildData('sub-colors')
+	}));
+};
+
+</script>
+</head>
+<body onload="onload()" onbeforeunload="beforeunload()">
+	<div id="notyarea"></div>
+	<header>
+		<h1>Color pick tool</h1>
+		<p><a href="https://mafumafuultu.github.io/">mafumafuultu.github.io</a></p>
+	</header>
+	<div class="">
+		<div>
+			<div class="grid col1-1">
+				<div class="colorrange">
+					<p>color</p>
+					<input type="range" name="" oninput="updatecolor('rcolor', this)" min="0" max="255" step="1" value="0" data-val="" id="r-color"><br>
+					<input type="range" name="" oninput="updatecolor('gcolor', this)" min="0" max="255" step="1" value="0" data-val="" id="g-color"><br>
+					<input type="range" name="" oninput="updatecolor('bcolor', this)" min="0" max="255" step="1" value="0" data-val="" id="b-color"><br>
+					<input type="range" name="" oninput="updatecolor('acolor', this)" min="0" max="1" step="0.001" value="1" data-val="" id="a-color"><br>
+				</div>
+				<div class="colorrange">
+					<p>background</p>
+					<input type="range" name="" oninput="updatecolor('rbg', this)" min="0" max="255" step="1" value="255" data-val="" id="r-bg"><br>
+					<input type="range" name="" oninput="updatecolor('gbg', this)" min="0" max="255" step="1" value="255" data-val="" id="g-bg"><br>
+					<input type="range" name="" oninput="updatecolor('bbg', this)" min="0" max="255" step="1" value="255" data-val="" id="b-bg"><br>
+					<input type="range" name="" oninput="updatecolor('abg', this)" min="0" max="1" step="0.001" value="1" data-val="" id="a-bg"><br>
+				</div>
+			</div>
+			<div id="preview" class="editcolor editbg" data-rcolor="0" data-gcolor="0" data-bcolor="0" data-acolor="1" data-rbg="255" data-gbg="255" data-bbg="255" data-abg="1"></div>
+			<div id="buttons">
+				<button onclick="addBase()">add base</button>
+				<button onclick="addSub()">add sub</button>
+				<button onclick="clearAll()">clear all</button>
+			</div>
+		</div>
+		<div class="grid col7-3">
+			<div class="flex" id="base-colors">
+			</div>
+			<div class="flex" id="sub-colors">
+			</div>
+		</div>
+	</div>
+	<template id="notyItem">
+		<div class="noty"><p></p></div>
+	</template>
+</body>
+</html>

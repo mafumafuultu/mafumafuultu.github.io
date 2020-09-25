@@ -24,6 +24,14 @@ const mafumafuulru = {
 			'Costa Rica': ['Black Honey', 'White Honey'],
 			'Indonesia': ['Mandheling'],
 		},
-	}
+		editor: [
+			'SublimeText',
+			'VSCode',
+		]
+	},
 };
 ```
+
+### Simple tools
+
+[Color pickup](./colortool.html)
