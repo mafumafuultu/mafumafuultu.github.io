@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+:root {
+	--text-color: #3e3b3f;
+	--background-color: #f8f8f0;
+	--link-base: #0000ee;
+	--link-visited: #551a8b;
+	--link-active: #ee0000;
+}
+
+body {
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+
+
+/* a {} */
+a:link,.link {color: var(--link-base, #0000ee);}
+a:visited,.visited {color: var(--link-visited, #551a8b);}
+/* a:focus {} */
+/* a:hover {} */
+a:active,.active {color: var(--link-active, #ee0000);}
+
+.link {text-decoration: underline 1px var(--link-base, #0000ee);}
+.visited {text-decoration: underline 1px var(--link-visited, #551a8b);}
+
+@media (prefers-color-scheme: dark) {
+	.ostheme {
+		--text-color: #f8f8f0;
+		--background-color: #2b292e;
+		--link-base: #99CCFF;
+		--link-visited: #3399FF;
+		--link-active: #e6db74;
+		color: var(--text-color);
+		background-color: var(--background-color);
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	.ostheme {
+		--text-color: #3e3b3f;
+		--background-color: #f8f8f0;
+		--link-base: #0000ee;
+		--link-visited: #551a8b;
+		--link-active: #ee0000;
+		color: var(--text-color);
+		background-color: var(--background-color);
+	}
+}
+
+.dark {
+	--text-color: #f8f8f0;
+	--background-color: #2b292e;
+	--link-base: #99CCFF;
+	--link-visited: #3399FF;
+	--link-active: #e6db74;
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+.light {
+	--text-color: #3e3b3f;
+	--background-color: #f8f8f0;
+	--link-base: #0000ee;
+	--link-visited: #551a8b;
+	--link-active: #ee0000;
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+	</style>
+</head>
+
+<body>
+	<header>
+		<h1>Theme check</h1>
+	</header>
+	<div class="">
+		<p>no theme</p>
+		<span>■■■■■■■ standerd text</span><br>
+		<span style="color:var(--link-base);">■■■■■■■ link color</span><br>
+		<span style="color:var(--link-visited);">■■■■■■■ link visited color</span><br>
+		<span style="color:var(--link-active);">■■■■■■■ link active color</span><br>
+		<a href="#" class="link">:link</a><br>
+		<a href="#" class="visited">:visited</a><br>
+		<a href="#" class="active">:active</a>
+	</div>
+	<div class="ostheme">
+		<p>os theme</p>
+		<span>■■■■■■■ standerd text</span><br>
+		<span style="color:var(--link-base);">■■■■■■■ link color</span><br>
+		<span style="color:var(--link-visited);">■■■■■■■ link visited color</span><br>
+		<span style="color:var(--link-active);">■■■■■■■ link active color</span><br>
+		<a href="#" class="link">:link</a><br>
+		<a href="#" class="visited">:visited</a><br>
+		<a href="#" class="active">:active</a>
+	</div>
+	<div class="dark">
+		<p>dark theme</p>
+		<span>■■■■■■■ standerd text</span><br>
+		<span style="color:var(--link-base);">■■■■■■■ link color</span><br>
+		<span style="color:var(--link-visited);">■■■■■■■ link visited color</span><br>
+		<span style="color:var(--link-active);">■■■■■■■ link active color</span><br>
+		<a href="#" class="link">:link</a><br>
+		<a href="#" class="visited">:visited</a><br>
+		<a href="#" class="active">:active</a>
+	</div>
+	<div class="light">
+		<p>light theme</p>
+		<span>■■■■■■■ standerd text</span><br>
+		<span style="color:var(--link-base);">■■■■■■■ link color</span><br>
+		<span style="color:var(--link-visited);">■■■■■■■ link visited color</span><br>
+		<span style="color:var(--link-active);">■■■■■■■ link active color</span><br>
+		<a href="#" class="link">:link</a><br>
+		<a href="#" class="visited">:visited</a><br>
+		<a href="#" class="active">:active</a>
+	</div>
+</body>
+
+</html>

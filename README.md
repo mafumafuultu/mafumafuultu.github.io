@@ -1,9 +1,10 @@
 # mafumafuultu.github.io
 
 ```js
-const mafumafuulru = {
+const mafumafuultu = {
 	name: 'mafumafuultu',
 	github: 'https://github.com/mafumafuultu',
+	comment: 'Basically, use tab indentation.',
 	sns: {
 		mastodon: 'https://qiitadon.com/@mafumafuultu',
 		twitter: 'https://twitter.com/mafumafuultu',
@@ -26,6 +27,7 @@ const mafumafuulru = {
 		},
 		editor: [
 			'SublimeText',
+			'VSCodium',
 			'VSCode',
 		]
 	},
